@@ -41,7 +41,7 @@ export default function Page() {
       <AuthorLayout content={mainContent}>
         <h2>About Me:</h2>
         <MDXLayoutRenderer code={author.body.code} />
-        <h3>Expected Dates:</h3>
+        <h3>Expected Dates (@ 7 P.M.):</h3>
         <div id="dates" className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
           {thursdays.map((thursday, i) => {
             return (
