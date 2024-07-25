@@ -71,8 +71,6 @@ const AnnouncementBanner = () => {
     )
   }, [])
 
-  console.log(closestThursday)
-
   return (
     <div className="flex h-8 w-full items-center justify-center bg-primary-300 dark:bg-primary-700">
       <p>{message}</p>
