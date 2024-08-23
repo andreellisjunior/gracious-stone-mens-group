@@ -59,16 +59,19 @@ const AnnouncementBanner = () => {
     const nextThursday = getClosestThursday()
     setClosestThursday(nextThursday)
 
-    setMessage(
-      noGroup
-        ? 'No group this week'
-        : `Next group meeting is: ${new Date(
-            new Date().getFullYear(),
-            nextThursday.month - 1
-          ).toLocaleDateString('en', {
-            month: 'long',
-          })} ${nextThursday.day}th at 7:00 PM`
+    const todayDate = new Date()
+    const nextThursdayDate = new Date(
+      todayDate.getFullYear(),
+      nextThursday.month - 1,
+      nextThursday.day
     )
+
+    const today =
+      todayDate.toDateString() === nextThursdayDate.toDateString()
+        ? 'TODAY'
+        : `${nextThursdayDate.toLocaleDateString('en', { month: 'long' })} ${nextThursday.day}th`
+
+    setMessage(noGroup ? 'No group this week' : `Next group meeting is: ${today} at 7:00 PM`)
   }, [])
 
   return (
