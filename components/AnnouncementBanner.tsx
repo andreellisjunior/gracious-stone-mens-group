@@ -38,18 +38,22 @@ const AnnouncementBanner = () => {
       const thursdays = getThursdays(year)
 
       let closest = new Date(year + 1, 0, 1) // Initialize to a date far in the future
-      let closestThursday
+      let closestThursday = { month: 0, day: 0, isToday: false }
 
       for (const { month, day } of thursdays) {
         for (const d of day) {
           const date = new Date(year, month - 1, d)
-          if (date.getTime() < now.getTime()) continue
           if (
             Math.abs(now.getTime() - date.getTime()) < Math.abs(now.getTime() - closest.getTime())
           ) {
             closest = date
-            closestThursday = { month, day: d }
+            closestThursday = { month, day: d, isToday: now.toDateString() === date.toDateString() }
           }
+          console.log({
+            dates: date.getTime(),
+            rightNow: now.getTime(),
+            closest: closest.getTime(),
+          })
         }
       }
 
@@ -60,19 +64,17 @@ const AnnouncementBanner = () => {
     setClosestThursday(nextThursday)
 
     const todayDate = new Date()
-    const nextThursdayDate = new Date(
-      todayDate.getFullYear(),
-      nextThursday.month - 1,
-      nextThursday.day
-    )
 
-    const today =
-      todayDate.toDateString() === nextThursdayDate.toDateString()
-        ? 'TODAY'
-        : `${nextThursdayDate.toLocaleDateString('en', { month: 'long' })} ${nextThursday.day}th`
+    const today = nextThursday.isToday
+      ? 'TODAY'
+      : `${new Date(
+          todayDate.getFullYear(),
+          nextThursday.month - 1,
+          nextThursday.day
+        ).toLocaleDateString('en', { month: 'long' })} ${nextThursday.day}th`
 
     setMessage(noGroup ? 'No group this week' : `Next group meeting is: ${today} at 7:00 PM`)
-  }, [])
+  }, [noGroup])
 
   return (
     <div className="flex h-8 w-full items-center justify-center bg-primary-300 dark:bg-primary-700">
