@@ -43,17 +43,13 @@ const AnnouncementBanner = () => {
       for (const { month, day } of thursdays) {
         for (const d of day) {
           const date = new Date(year, month - 1, d)
+          if (date.getTime() < now.getTime()) continue // Skip past dates
           if (
             Math.abs(now.getTime() - date.getTime()) < Math.abs(now.getTime() - closest.getTime())
           ) {
             closest = date
             closestThursday = { month, day: d, isToday: now.toDateString() === date.toDateString() }
           }
-          console.log({
-            dates: date.getTime(),
-            rightNow: now.getTime(),
-            closest: closest.getTime(),
-          })
         }
       }
 
