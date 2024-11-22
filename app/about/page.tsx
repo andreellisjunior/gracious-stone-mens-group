@@ -9,7 +9,7 @@ export const metadata = genPageMetadata({ title: 'About' })
 function getThursdays(year: number) {
   const result = [] as { month: number; day: number[] }[]
 
-  for (let month = 0; month < 12; month++) {
+  for (let month = 0; month < 11; month++) {
     let count = 0
     const days: number[] = []
     for (let day = 1; day <= 31; day++) {
@@ -18,7 +18,7 @@ function getThursdays(year: number) {
       if (date.getDay() === 4) {
         // 4 stands for Thursday
         count++
-        if (count === 2 || count === 4) {
+        if ((count === 2 || count === 4) && !(month === 10 && day === 28)) {
           days.push(day)
         }
       }
@@ -56,7 +56,7 @@ export default function Page() {
                 </div>
                 <div className="flex gap-2">
                   <div className="text-lg font-bold">{thursday.day[0]}</div>
-                  &amp;
+                  {thursday.day[1] && '&'}
                   <div className="text-lg font-bold">{thursday.day[1]}</div>
                 </div>
               </div>
