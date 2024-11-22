@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 const AnnouncementBanner = () => {
   const [message, setMessage] = useState('No announcements at the moment')
   const [closestThursday, setClosestThursday] = useState({ month: 0, day: 0 })
-  const noGroup = false
+  const noGroup = true
 
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
@@ -75,7 +75,11 @@ const AnnouncementBanner = () => {
           nextThursday.day
         ).toLocaleDateString('en', { month: 'long' })} ${nextThursday.day}th`
 
-    setMessage(noGroup ? 'No group this week' : `Next group meeting is: ${today} at 7:00 PM`)
+    setMessage(
+      noGroup
+        ? 'No more group until next year! Thanks to everyone that has joined and experienced. See you in 2025!'
+        : `Next group meeting is: ${today} at 7:00 PM`
+    )
   }, [noGroup])
 
   return (
