@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 const AnnouncementBanner = () => {
   const [message, setMessage] = useState('No announcements at the moment')
   const [closestThursday, setClosestThursday] = useState({ month: 0, day: 0 })
-  const noGroup = true
+  const noGroup = false
 
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
@@ -49,7 +49,19 @@ const AnnouncementBanner = () => {
       for (const { month, day } of thursdays) {
         for (const d of day) {
           const date = new Date(year, month - 1, d, 19)
-          if (date.getTime() < now.getTime()) continue // Skip past dates
+
+          // Skip past dates
+          if (date.getTime() < now.getTime()) continue
+
+          // If today is Thursday and after 9 PM, move to next Thursday
+          if (
+            now.getDay() === 4 && // Thursday (0 = Sunday, 4 = Thursday)
+            now.getHours() >= 21 &&
+            now.toDateString() === date.toDateString()
+          ) {
+            continue
+          }
+
           if (
             Math.abs(now.getTime() - date.getTime()) < Math.abs(now.getTime() - closest.getTime())
           ) {

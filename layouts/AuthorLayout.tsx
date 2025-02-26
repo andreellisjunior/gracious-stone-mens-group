@@ -22,13 +22,14 @@ export default function AuthorLayout({ children, content }: Props) {
         <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
           <div className="flex flex-col items-center space-x-2 pt-8">
             {avatar && (
-              <div className="relative h-48 w-52 rounded-full">
+              <div className="relative h-auto w-52 rounded-full">
                 <Image
                   src={avatar}
                   alt="avatar"
-                  fill
-                  sizes="cover"
-                  className="h-48 w-48 rounded-full"
+                  width={500}
+                  height={500}
+                  sizes="contain"
+                  className="h-auto w-full rounded-full"
                 />
               </div>
             )}
