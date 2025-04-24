@@ -31,11 +31,6 @@ const AnnouncementBanner = () => {
     return result
   }
 
-  // 1. calculate how many days away the next Thursday is, via getDay()
-  // 1b. handle if it's today, but after 7pm
-  // 2. setDate(getDate() + #1)
-  // 3. getDate() to check whether it is an odd or even Thursday
-  // 4. If odd, add 7 days to the date
   useEffect(() => {
     function getClosestThursday() {
       const now = new Date()
@@ -48,17 +43,19 @@ const AnnouncementBanner = () => {
 
       for (const { month, day } of thursdays) {
         for (const d of day) {
-          const date = new Date(year, month - 1, d, 19)
+          const date = new Date(year, month - 1, d, 21) // 9 PM
 
           // Skip past dates
           if (date.getTime() < now.getTime()) continue
 
-          // If today is Thursday and after 9 PM, move to next Thursday
+          // If today is Thursday and before 9 PM, keep current Thursday
           if (
             now.getDay() === 4 && // Thursday (0 = Sunday, 4 = Thursday)
-            now.getHours() >= 21 &&
+            now.getHours() < 21 && // Changed from >= 21 to < 21
             now.toDateString() === date.toDateString()
           ) {
+            closest = date
+            closestThursday = { month, day: d, isToday: true }
             continue
           }
 
