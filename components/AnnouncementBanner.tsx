@@ -1,10 +1,14 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import AlertModal from './AlertModal'
 
 const AnnouncementBanner = () => {
   const [message, setMessage] = useState('No announcements at the moment')
   const [closestThursday, setClosestThursday] = useState({ month: 0, day: 0 })
   const noGroup = false
+
+  // Add a list of canceled dates
+  const canceledDates = [new Date(2025, 5, 12)] // June 12, 2024 (month is 0-indexed)
 
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
@@ -36,7 +40,7 @@ const AnnouncementBanner = () => {
       const now = new Date()
       const year = now.getFullYear()
       const thursdays = getThursdays(year)
-      console.log(thursdays)
+      // console.log(thursdays)
 
       let closest = new Date(year + 1, 0, 1) // Initialize to a date far in the future
       let closestThursday = { month: 0, day: 0, isToday: false }
@@ -44,6 +48,18 @@ const AnnouncementBanner = () => {
       for (const { month, day } of thursdays) {
         for (const d of day) {
           const date = new Date(year, month - 1, d, 21) // 9 PM
+
+          // Skip canceled dates
+          if (
+            canceledDates.some(
+              (canceledDate) =>
+                canceledDate.getFullYear() === date.getFullYear() &&
+                canceledDate.getMonth() === date.getMonth() &&
+                canceledDate.getDate() === date.getDate()
+            )
+          ) {
+            continue
+          }
 
           // Skip past dates
           if (date.getTime() < now.getTime()) continue
@@ -94,6 +110,7 @@ const AnnouncementBanner = () => {
   return (
     <div className="flex h-8 w-full items-center justify-center bg-primary-300 dark:bg-primary-700">
       <p>{message}</p>
+      <AlertModal />
     </div>
   )
 }
