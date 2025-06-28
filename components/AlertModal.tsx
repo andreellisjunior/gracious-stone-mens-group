@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import { useState } from 'react'
 
 export default function AlertModal() {
   const [open, setOpen] = useState(true)
@@ -43,9 +43,8 @@ export default function AlertModal() {
                   </DialogTitle>
                   <div className="mt-2">
                     <p className="text-sm">
-                      The men's group will be meeting at a new address. Our next meeting will be on
-                      June 26th. Please make note of this change and update your calendar
-                      accordingly.
+                      The men's group will be meeting at a new address starting June 26th. Please
+                      make note of this change and update your calendar accordingly.
                     </p>
                   </div>
                 </div>
