@@ -8,7 +8,7 @@ const AnnouncementBanner = () => {
   const noGroup = false
 
   // Add a list of canceled dates
-  const canceledDates = [new Date(2025, 10, 11)] // June 12, 2024 (month is 0-indexed)
+  const canceledDates = [new Date(2025, 9, 9)] // June 12, 2024 (month is 0-indexed)
 
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
@@ -103,7 +103,7 @@ const AnnouncementBanner = () => {
     setMessage(
       noGroup
         ? 'No more group until next year! Thanks to everyone that has joined and experienced. See you in 2025!'
-        : `Next group meeting is: ${today} at 7:00 PM`
+        : `Canceled for October 9th. Next group meeting is: ${today} at 7:00 PM`
     )
   }, [noGroup])
 
