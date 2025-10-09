@@ -1,11 +1,12 @@
-import { mkdirSync, writeFileSync } from 'fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { slug } from 'github-slugger'
 import path from 'path'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 import { escape } from 'pliny/utils/htmlEscaper.js'
 import { allBlogs } from '../.contentlayer/generated/index.mjs'
-import tagData from '../app/tag-data.json' with { type: 'json' }
 import siteMetadata from '../data/siteMetadata.js'
+
+const tagData = JSON.parse(readFileSync('./app/tag-data.json', 'utf8'))
 
 const generateRssItem = (config, post) => `
   <item>
