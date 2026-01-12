@@ -1,5 +1,5 @@
 import { defineDocumentType, ComputedFields, makeSource } from 'contentlayer/source-files'
-import { writeFileSync } from 'fs'
+import { writeFileSync, readFileSync, readdirSync, statSync } from 'fs'
 import readingTime from 'reading-time'
 import { slug } from 'github-slugger'
 import path from 'path'
@@ -72,6 +72,78 @@ function createSearchIndex(allBlogs) {
       JSON.stringify(allCoreContent(sortPosts(allBlogs)))
     )
     console.log('Local search index generated...')
+  }
+}
+
+/**
+ * Fix contentlayer generated files that use assert { type: 'json' } syntax
+ * which is not supported in Vercel's Node.js version
+ */
+function findMjsFiles(dir: string, fileList: string[] = []): string[] {
+  const files = readdirSync(dir)
+
+  for (const file of files) {
+    const filePath = path.join(dir, file)
+    const stat = statSync(filePath)
+
+    if (stat.isDirectory()) {
+      findMjsFiles(filePath, fileList)
+    } else if (file === '_index.mjs') {
+      fileList.push(filePath)
+    }
+  }
+
+  return fileList
+}
+
+function fixContentlayerImports() {
+  const generatedDir = path.join(process.cwd(), '.contentlayer', 'generated')
+  
+  try {
+    const mjsFiles = findMjsFiles(generatedDir)
+
+    for (const filePath of mjsFiles) {
+      let content = readFileSync(filePath, 'utf-8')
+
+      // Check if file contains assert syntax
+      if (content.includes('assert { type: \'json\' }')) {
+        const dir = path.dirname(filePath)
+
+        // Replace: import x from './file.json' assert { type: 'json' }
+        // With: const x = JSON.parse(readFileSync('./file.json', 'utf-8'))
+        const importRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]\s+assert\s+\{\s*type:\s*['"]json['"]\s*\}/g
+
+        // Check if we need to add the fs import
+        const needsFsImport = !content.includes("import { readFileSync } from 'fs'")
+
+        // Replace all assert imports
+        content = content.replace(importRegex, (match, varName, jsonPath) => {
+          // Resolve the JSON file path relative to the mjs file's directory
+          const absoluteJsonPath = path.resolve(dir, jsonPath)
+          const relativeJsonPath = path.relative(process.cwd(), absoluteJsonPath)
+          return `const ${varName} = JSON.parse(readFileSync('${relativeJsonPath.replace(/\\/g, '/')}', 'utf-8'))`
+        })
+
+        // Add fs import at the top if needed
+        if (needsFsImport) {
+          // Find where to insert (after the NOTE comment if present, or at the beginning)
+          const noteCommentEnd = content.indexOf('// NOTE')
+          const insertIndex = noteCommentEnd !== -1 
+            ? content.indexOf('\n', noteCommentEnd) + 1
+            : 0
+          
+          content = content.slice(0, insertIndex) + "import { readFileSync } from 'fs'\n" + content.slice(insertIndex)
+        }
+
+        writeFileSync(filePath, content, 'utf-8')
+        console.log(`Fixed imports in ${path.relative(process.cwd(), filePath)}`)
+      }
+    }
+  } catch (error) {
+    // If .contentlayer/generated doesn't exist yet, that's okay
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn('Warning: Could not fix contentlayer imports:', error)
+    }
   }
 }
 
@@ -153,5 +225,8 @@ export default makeSource({
     const { allBlogs } = await importData()
     createTagCount(allBlogs)
     createSearchIndex(allBlogs)
+    // Fix assert syntax in generated files immediately after generation
+    // This must happen before Next.js tries to import them during build
+    fixContentlayerImports()
   },
 })
