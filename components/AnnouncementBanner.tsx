@@ -10,7 +10,6 @@ const AnnouncementBanner = () => {
   // Add a list of canceled dates
   const canceledDates: Date[] = [new Date(2026, 0, 22)] // (YYYY, MM, DD)
 
-
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
 
