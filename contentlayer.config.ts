@@ -96,48 +96,69 @@ function findMjsFiles(dir: string, fileList: string[] = []): string[] {
   return fileList
 }
 
+function fixMjsFile(filePath: string) {
+  try {
+    let content = readFileSync(filePath, 'utf-8')
+
+    // Check if file contains assert syntax
+    if (content.includes('assert { type: \'json\' }')) {
+      const dir = path.dirname(filePath)
+
+      // Replace: import x from './file.json' assert { type: 'json' }
+      // With: const x = JSON.parse(readFileSync('./file.json', 'utf-8'))
+      const importRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]\s+assert\s+\{\s*type:\s*['"]json['"]\s*\}/g
+
+      // Check if we need to add the fs import
+      const needsFsImport = !content.includes("import { readFileSync } from 'fs'")
+
+      // Replace all assert imports
+      content = content.replace(importRegex, (match, varName, jsonPath) => {
+        // Resolve the JSON file path relative to the mjs file's directory
+        const absoluteJsonPath = path.resolve(dir, jsonPath)
+        const relativeJsonPath = path.relative(process.cwd(), absoluteJsonPath)
+        return `const ${varName} = JSON.parse(readFileSync('${relativeJsonPath.replace(/\\/g, '/')}', 'utf-8'))`
+      })
+
+      // Add fs import at the top if needed
+      if (needsFsImport) {
+        // Find where to insert (after the NOTE comment if present, or at the beginning)
+        const noteCommentEnd = content.indexOf('// NOTE')
+        const insertIndex = noteCommentEnd !== -1 
+          ? content.indexOf('\n', noteCommentEnd) + 1
+          : 0
+        
+        content = content.slice(0, insertIndex) + "import { readFileSync } from 'fs'\n" + content.slice(insertIndex)
+      }
+
+      writeFileSync(filePath, content, 'utf-8')
+      console.log(`Fixed imports in ${path.relative(process.cwd(), filePath)}`)
+      return true
+    }
+    return false
+  } catch (fileError) {
+    console.warn(`Warning: Could not fix ${filePath}:`, fileError)
+    return false
+  }
+}
+
 function fixContentlayerImports() {
   const generatedDir = path.join(process.cwd(), '.contentlayer', 'generated')
   
   try {
+    // Fix all _index.mjs files in subdirectories
     const mjsFiles = findMjsFiles(generatedDir)
-
     for (const filePath of mjsFiles) {
-      let content = readFileSync(filePath, 'utf-8')
+      fixMjsFile(filePath)
+    }
 
-      // Check if file contains assert syntax
-      if (content.includes('assert { type: \'json\' }')) {
-        const dir = path.dirname(filePath)
-
-        // Replace: import x from './file.json' assert { type: 'json' }
-        // With: const x = JSON.parse(readFileSync('./file.json', 'utf-8'))
-        const importRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]\s+assert\s+\{\s*type:\s*['"]json['"]\s*\}/g
-
-        // Check if we need to add the fs import
-        const needsFsImport = !content.includes("import { readFileSync } from 'fs'")
-
-        // Replace all assert imports
-        content = content.replace(importRegex, (match, varName, jsonPath) => {
-          // Resolve the JSON file path relative to the mjs file's directory
-          const absoluteJsonPath = path.resolve(dir, jsonPath)
-          const relativeJsonPath = path.relative(process.cwd(), absoluteJsonPath)
-          return `const ${varName} = JSON.parse(readFileSync('${relativeJsonPath.replace(/\\/g, '/')}', 'utf-8'))`
-        })
-
-        // Add fs import at the top if needed
-        if (needsFsImport) {
-          // Find where to insert (after the NOTE comment if present, or at the beginning)
-          const noteCommentEnd = content.indexOf('// NOTE')
-          const insertIndex = noteCommentEnd !== -1 
-            ? content.indexOf('\n', noteCommentEnd) + 1
-            : 0
-          
-          content = content.slice(0, insertIndex) + "import { readFileSync } from 'fs'\n" + content.slice(insertIndex)
-        }
-
-        writeFileSync(filePath, content, 'utf-8')
-        console.log(`Fixed imports in ${path.relative(process.cwd(), filePath)}`)
+    // Also fix the main index.mjs file
+    const mainIndexPath = path.join(generatedDir, 'index.mjs')
+    try {
+      if (statSync(mainIndexPath).isFile()) {
+        fixMjsFile(mainIndexPath)
       }
+    } catch {
+      // File might not exist yet, that's okay
     }
   } catch (error) {
     // If .contentlayer/generated doesn't exist yet, that's okay
@@ -222,11 +243,13 @@ export default makeSource({
     ],
   },
   onSuccess: async (importData) => {
+    // Fix assert syntax in generated files BEFORE importing them
+    // This must happen immediately after generation, before any imports
+    fixContentlayerImports()
+    
+    // Now we can safely import the fixed files
     const { allBlogs } = await importData()
     createTagCount(allBlogs)
     createSearchIndex(allBlogs)
-    // Fix assert syntax in generated files immediately after generation
-    // This must happen before Next.js tries to import them during build
-    fixContentlayerImports()
   },
 })
