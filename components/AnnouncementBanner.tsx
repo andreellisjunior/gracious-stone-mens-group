@@ -8,7 +8,7 @@ const AnnouncementBanner = () => {
   const noGroup = false
 
   // Add a list of canceled dates
-  const canceledDates = [new Date(2025, 9, 9)] // June 12, 2024 (month is 0-indexed)
+  const canceledDates: Date[] = [new Date(2026, 0, 22)] // (YYYY, MM, DD)
 
   function getThursdays(year: number) {
     const result = [] as { month: number; day: number[] }[]
@@ -53,9 +53,9 @@ const AnnouncementBanner = () => {
           if (
             canceledDates.some(
               (canceledDate) =>
-                canceledDate.getFullYear() === date.getFullYear() &&
-                canceledDate.getMonth() === date.getMonth() &&
-                canceledDate.getDate() === date.getDate()
+                canceledDate?.getFullYear() === date.getFullYear() &&
+                canceledDate?.getMonth() === date.getMonth() &&
+                canceledDate?.getDate() === date.getDate()
             )
           ) {
             continue
