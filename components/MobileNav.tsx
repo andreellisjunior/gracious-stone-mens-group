@@ -1,32 +1,55 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from './Link'
 import headerNavLinks from '@/data/headerNavLinks'
 
 const MobileNav = () => {
   const [navShow, setNavShow] = useState(false)
 
-  const onToggleNav = () => {
-    setNavShow((status) => {
-      if (status) {
-        document.body.style.overflow = 'auto'
-      } else {
-        // Prevent scrolling
-        document.body.style.overflow = 'hidden'
+  useEffect(() => {
+    document.body.style.overflow = navShow ? 'hidden' : 'auto'
+
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setNavShow(false)
       }
-      return !status
-    })
+    }
+
+    window.addEventListener('keydown', onEscape)
+    return () => {
+      document.body.style.overflow = 'auto'
+      window.removeEventListener('keydown', onEscape)
+    }
+  }, [navShow])
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 640) {
+        setNavShow(false)
+      }
+    }
+
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const onToggleNav = () => {
+    setNavShow((status) => !status)
   }
 
   return (
     <>
-      <button aria-label="Toggle Menu" onClick={onToggleNav} className="sm:hidden">
+      <button
+        aria-label="Toggle Menu"
+        onClick={onToggleNav}
+        className="rounded-lg border border-primary-900 bg-[#0f2347] p-2 text-gray-100 md:hidden"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
-          className="h-8 w-8 text-gray-900 dark:text-gray-100"
+          className="h-6 w-6"
         >
           <path
             fillRule="evenodd"
@@ -35,41 +58,47 @@ const MobileNav = () => {
           />
         </svg>
       </button>
-      <div
-        className={`fixed left-0 top-0 z-10 h-full w-full transform bg-white opacity-95 duration-300 ease-in-out dark:bg-gray-950 dark:opacity-[0.98] ${
-          navShow ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex justify-end">
-          <button className="mr-8 mt-11 h-8 w-8" aria-label="Toggle Menu" onClick={onToggleNav}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="text-gray-900 dark:text-gray-100"
+      {navShow && (
+        <aside className="fixed inset-0 z-50 flex h-screen flex-col bg-[#020814] px-5 pb-6 pt-4 md:hidden">
+          <div className="mb-4 flex items-center justify-between border-b border-primary-900 pb-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">
+              Menu
+            </p>
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-800 bg-[#172d57] text-gray-100"
+              aria-label="Close Menu"
+              onClick={onToggleNav}
             >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
-        <nav className="fixed mt-8 h-full">
-          {headerNavLinks.map((link) => (
-            <div key={link.title} className="px-12 py-4">
-              <Link
-                href={link.href}
-                className="text-2xl font-bold tracking-widest text-gray-900 dark:text-gray-100"
-                onClick={onToggleNav}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-6 w-6"
               >
-                {link.title}
-              </Link>
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <nav className="flex-1 overflow-y-auto">
+            <div className="space-y-3 pb-8">
+              {headerNavLinks.map((link) => (
+                <Link
+                  key={link.title}
+                  href={link.href}
+                  className="flex min-h-14 w-full items-center rounded-xl border border-primary-900 bg-[#0f2347] px-5 py-4 text-xl font-bold tracking-wide text-gray-100"
+                  onClick={() => setNavShow(false)}
+                >
+                  {link.title}
+                </Link>
+              ))}
             </div>
-          ))}
-        </nav>
-      </div>
+          </nav>
+        </aside>
+      )}
     </>
   )
 }

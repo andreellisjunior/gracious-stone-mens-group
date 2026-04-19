@@ -34,12 +34,13 @@ function fixContentlayerImports() {
     let content = readFileSync(filePath, 'utf-8')
 
     // Check if file contains assert syntax
-    if (content.includes('assert { type: \'json\' }')) {
+    if (content.includes("assert { type: 'json' }")) {
       const dir = path.dirname(filePath)
 
       // Replace: import x from './file.json' assert { type: 'json' }
       // With: const x = JSON.parse(readFileSync('./file.json', 'utf-8'))
-      const importRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]\s+assert\s+\{\s*type:\s*['"]json['"]\s*\}/g
+      const importRegex =
+        /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]\s+assert\s+\{\s*type:\s*['"]json['"]\s*\}/g
 
       // Check if we need to add the fs import
       const needsFsImport = !content.includes("import { readFileSync } from 'fs'")
@@ -52,18 +53,22 @@ function fixContentlayerImports() {
         const absoluteJsonPath = path.resolve(dir, jsonPath)
         const relativeToCwd = path.relative(process.cwd(), absoluteJsonPath)
         // Use path.join to ensure proper path formatting
-        return `const ${varName} = JSON.parse(readFileSync('${relativeToCwd.replace(/\\/g, '/')}', 'utf-8'))`
+        return `const ${varName} = JSON.parse(readFileSync('${relativeToCwd.replace(
+          /\\/g,
+          '/'
+        )}', 'utf-8'))`
       })
 
       // Add fs import at the top if needed
       if (needsFsImport) {
         // Find where to insert (after the NOTE comment if present, or at the beginning)
         const noteCommentEnd = content.indexOf('// NOTE')
-        const insertIndex = noteCommentEnd !== -1 
-          ? content.indexOf('\n', noteCommentEnd) + 1
-          : 0
-        
-        content = content.slice(0, insertIndex) + "import { readFileSync } from 'fs'\n" + content.slice(insertIndex)
+        const insertIndex = noteCommentEnd !== -1 ? content.indexOf('\n', noteCommentEnd) + 1 : 0
+
+        content =
+          content.slice(0, insertIndex) +
+          "import { readFileSync } from 'fs'\n" +
+          content.slice(insertIndex)
       }
 
       writeFileSync(filePath, content, 'utf-8')
@@ -73,4 +78,3 @@ function fixContentlayerImports() {
 }
 
 fixContentlayerImports()
-

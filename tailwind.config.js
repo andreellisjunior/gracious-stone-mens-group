@@ -25,7 +25,26 @@ module.exports = {
         sans: ['var(--font-league-spartan)', ...fontFamily.sans],
       },
       colors: {
-        primary: colors.cyan,
+        primary: {
+          50: '#edf8ff',
+          100: '#d8eeff',
+          200: '#b4dcff',
+          300: '#82c5ff',
+          400: '#489fff',
+          500: '#1f7eff',
+          600: '#115fe3',
+          700: '#124db8',
+          800: '#17418f',
+          900: '#19396f',
+          950: '#0f2347',
+        },
+        brand: {
+          navy: '#0f2347',
+          deep: '#123b5e',
+          mist: '#f2f6fa',
+          fog: '#c9d6e4',
+          slate: '#1f3144',
+        },
       },
       typography: ({ theme }) => ({
         DEFAULT: {
@@ -45,7 +64,7 @@ module.exports = {
               fontWeight: '600',
             },
             code: {
-              color: theme('colors.indigo.500'),
+              color: theme('colors.primary.700'),
             },
           },
         },
