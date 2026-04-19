@@ -6,7 +6,7 @@ import NewsletterForm from 'pliny/ui/NewsletterForm'
 
 const MAX_DISPLAY = 5
 
-export default function Home({ posts, episodes = [] }) {
+export default function Home({ posts, episodes = [] }: { posts: any[], episodes: any[] }) {
   const latestEpisode = episodes[0]
 
   return (
