@@ -33,3 +33,23 @@ input:-webkit-autofill:focus {
 .katex-display {
   overflow: auto hidden;
 }
+
+@layer base {
+  body {
+    @apply bg-gray-950 text-gray-100;
+  }
+}
+
+@layer components {
+  .surface-panel {
+    @apply rounded-3xl border border-primary-900/70 bg-[#0b1a33] shadow-sm backdrop-blur;
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-primary-900/70 bg-[#0f2347] p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .cta-button {
+    @apply inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 font-semibold text-white transition hover:bg-primary-700;
+  }
+}

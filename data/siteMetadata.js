@@ -5,7 +5,7 @@ const siteMetadata = {
   headerTitle: `Gracious Stone Men's Group`,
   description: 'A collections of previous group topics and discussions',
   language: 'en-us',
-  theme: 'system', // system, dark or light
+  theme: 'dark', // system, dark or light
   siteUrl: 'https://gsmg.vercel.app/',
   siteRepo: 'https://github.com/andreellisjunior/gracious-stone-mens-group',
   siteLogo: '/static/images/logo.png',

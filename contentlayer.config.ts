@@ -221,9 +221,44 @@ export const Authors = defineDocumentType(() => ({
   computedFields,
 }))
 
+export const PodcastEpisode = defineDocumentType(() => ({
+  name: 'PodcastEpisode',
+  filePathPattern: 'podcast/**/*.mdx',
+  contentType: 'mdx',
+  fields: {
+    title: { type: 'string', required: true },
+    date: { type: 'date', required: true },
+    draft: { type: 'boolean' },
+    summary: { type: 'string' },
+    spotifyUrl: { type: 'string' },
+    audioUrl: { type: 'string' },
+    duration: { type: 'string' },
+    episodeNumber: { type: 'number' },
+    season: { type: 'number' },
+    coverImage: { type: 'string' },
+    guests: { type: 'list', of: { type: 'string' }, default: [] },
+    tags: { type: 'list', of: { type: 'string' }, default: [] },
+  },
+  computedFields: {
+    ...computedFields,
+    structuredData: {
+      type: 'json',
+      resolve: (doc) => ({
+        '@context': 'https://schema.org',
+        '@type': 'PodcastEpisode',
+        name: doc.title,
+        datePublished: doc.date,
+        description: doc.summary,
+        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+        associatedMedia: doc.audioUrl || doc.spotifyUrl,
+      }),
+    },
+  },
+}))
+
 export default makeSource({
   contentDirPath: 'data',
-  documentTypes: [Blog, Authors],
+  documentTypes: [Blog, Authors, PodcastEpisode],
   mdx: {
     cwd: process.cwd(),
     remarkPlugins: [

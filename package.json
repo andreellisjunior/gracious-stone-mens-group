@@ -5,6 +5,8 @@
   "scripts": {
     "start": "next dev",
     "dev": "cross-env INIT_CWD=$PWD next dev",
+    "sync:podcast": "node ./scripts/sync-podcast.mjs",
+    "prebuild": "node ./scripts/sync-podcast.mjs",
     "build": "cross-env INIT_CWD=$PWD next build && node ./scripts/fix-contentlayer-imports.mjs && node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
