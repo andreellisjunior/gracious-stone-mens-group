@@ -1,9 +1,10 @@
 import Link from '@/components/Link'
+import NextMeetingCard from '@/components/NextMeetingCard'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import { formatDate } from 'pliny/utils/formatDate'
-import NewsletterForm from 'pliny/ui/NewsletterForm'
 import { Blog, PodcastEpisode } from 'contentlayer/generated'
+import NewsletterForm from 'pliny/ui/NewsletterForm'
+import { formatDate } from 'pliny/utils/formatDate'
 
 const MAX_DISPLAY = 5
 
@@ -114,17 +115,7 @@ export default function Home({
             <p className="mt-2 text-gray-300">Podcast episodes will appear here once synced.</p>
           )}
         </div>
-        <div className="surface-card">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-700">Community</p>
-          <ul className="mt-4 space-y-3 text-sm text-gray-300">
-            <li>Active men online: 1,284</li>
-            <li>Saturday brotherhood hike planning board</li>
-            <li>Accountability tools and prayer prompts</li>
-          </ul>
-          <div className="mt-5 text-sm font-semibold text-primary-700 dark:text-primary-300">
-            <Link href="/about#dates">View events &rarr;</Link>
-          </div>
-        </div>
+        <NextMeetingCard />
       </section>
 
       {siteMetadata.newsletter?.provider && (
