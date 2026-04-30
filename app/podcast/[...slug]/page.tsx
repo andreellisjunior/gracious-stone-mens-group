@@ -1,14 +1,14 @@
 import 'css/prism.css'
 import 'katex/dist/katex.css'
 
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import Link from '@/components/Link'
+import { components } from '@/components/MDXComponents'
+import SpotifyEmbed from '@/components/SpotifyEmbed'
 import siteMetadata from '@/data/siteMetadata'
 import { allPodcastEpisodes } from 'contentlayer/generated'
-import { MDXLayoutRenderer } from 'pliny/mdx-components'
-import { components } from '@/components/MDXComponents'
-import Link from '@/components/Link'
-import SpotifyEmbed from '@/components/SpotifyEmbed'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { MDXLayoutRenderer } from 'pliny/mdx-components.js'
 
 export async function generateMetadata({
   params,

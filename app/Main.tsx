@@ -3,8 +3,8 @@ import NextMeetingCard from '@/components/NextMeetingCard'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { Blog, PodcastEpisode } from 'contentlayer/generated'
-import NewsletterForm from 'pliny/ui/NewsletterForm'
-import { formatDate } from 'pliny/utils/formatDate'
+import NewsletterForm from 'pliny/ui/NewsletterForm.js'
+import { formatDate } from 'pliny/utils/formatDate.js'
 
 const MAX_DISPLAY = 5
 

@@ -1,9 +1,9 @@
 import Link from '@/components/Link'
-import { allPodcastEpisodes } from 'contentlayer/generated'
-import { allCoreContent } from 'pliny/utils/contentlayer'
-import { genPageMetadata } from 'app/seo'
 import siteMetadata from '@/data/siteMetadata'
-import { formatDate } from 'pliny/utils/formatDate'
+import { genPageMetadata } from 'app/seo'
+import { allPodcastEpisodes } from 'contentlayer/generated'
+import { allCoreContent } from 'pliny/utils/contentlayer.js'
+import { formatDate } from 'pliny/utils/formatDate.js'
 
 export const metadata = genPageMetadata({
   title: 'Podcast',
