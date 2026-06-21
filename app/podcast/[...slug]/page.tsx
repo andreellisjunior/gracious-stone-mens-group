@@ -1,14 +1,10 @@
-import 'css/prism.css'
-import 'katex/dist/katex.css'
-
 import Link from '@/components/Link'
-import { components } from '@/components/MDXComponents'
 import SpotifyEmbed from '@/components/SpotifyEmbed'
 import siteMetadata from '@/data/siteMetadata'
 import { allPodcastEpisodes } from 'contentlayer/generated'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { MDXLayoutRenderer } from 'pliny/mdx-components.js'
+import { formatDate } from 'pliny/utils/formatDate.js'
 
 export async function generateMetadata({
   params,
@@ -29,7 +25,7 @@ export async function generateMetadata({
       locale: 'en_US',
       type: 'article',
       publishedTime: new Date(episode.date).toISOString(),
-      images: [episode.coverImage || siteMetadata.socialBanner],
+      images: [siteMetadata.socialBanner],
     },
   }
 }
@@ -49,17 +45,24 @@ export default async function PodcastEpisodePage({ params }: { params: { slug: s
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-700">
           Podcast episode
         </p>
+        <time
+          className="mt-2 block text-xs font-semibold uppercase tracking-wide text-primary-700"
+          dateTime={episode.date}
+        >
+          {formatDate(episode.date, siteMetadata.locale)}
+        </time>
         <h1 className="mt-2 text-4xl font-extrabold text-brand-navy dark:text-white">
           {episode.title}
         </h1>
-        <p className="mt-3 text-brand-slate/80 dark:text-gray-300">{episode.summary}</p>
+        {episode.summary && (
+          <p className="mt-3 text-brand-slate/80 dark:text-gray-300">{episode.summary}</p>
+        )}
         {episode.spotifyUrl && <SpotifyEmbed url={episode.spotifyUrl} title={episode.title} />}
-        <div className="mt-3 text-sm font-semibold text-primary-700 dark:text-primary-300">
-          <Link href={episode.spotifyUrl || '/podcast'}>Open in Spotify &rarr;</Link>
-        </div>
-      </div>
-      <div className="prose mt-6 max-w-none dark:prose-invert">
-        <MDXLayoutRenderer code={episode.body.code} components={components} toc={episode.toc} />
+        {episode.spotifyUrl && (
+          <div className="mt-3 text-sm font-semibold text-primary-700 dark:text-primary-300">
+            <Link href={episode.spotifyUrl}>Open in Spotify &rarr;</Link>
+          </div>
+        )}
       </div>
       <div className="mt-6">
         <Link
