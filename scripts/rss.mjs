@@ -40,10 +40,9 @@ const generatePodcastItem = (config, episode) => `
   <item>
     <guid>${config.siteUrl}/podcast/${episode.slug}</guid>
     <title>${escape(episode.title)}</title>
-    <link>${config.siteUrl}/podcast/${episode.slug}</link>
+    <link>${escape(episode.spotifyUrl || `${config.siteUrl}/podcast/${episode.slug}`)}</link>
     ${episode.summary ? `<description>${escape(episode.summary)}</description>` : ''}
     <pubDate>${new Date(episode.date).toUTCString()}</pubDate>
-    ${episode.audioUrl ? `<enclosure url="${escape(episode.audioUrl)}" type="audio/mpeg" />` : ''}
   </item>
 `
 
@@ -81,9 +80,9 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 
 const rss = () => {
   generateRSS(siteMetadata, allBlogs)
-  const podcastEpisodes = allPodcastEpisodes
-    .filter((episode) => episode.draft !== true)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const podcastEpisodes = allPodcastEpisodes.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
   if (podcastEpisodes.length > 0) {
     const podcastFeed = generatePodcastRss(siteMetadata, podcastEpisodes)
     writeFileSync('./public/podcast-feed.xml', podcastFeed)

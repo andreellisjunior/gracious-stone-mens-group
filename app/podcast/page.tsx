@@ -1,6 +1,6 @@
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
-import { genPageMetadata } from 'app/seo'
+import { genPageMetadata } from '@/app/seo'
 import { allPodcastEpisodes } from 'contentlayer/generated'
 import { allCoreContent } from 'pliny/utils/contentlayer.js'
 import { formatDate } from 'pliny/utils/formatDate.js'
@@ -12,9 +12,7 @@ export const metadata = genPageMetadata({
 
 export default function PodcastPage() {
   const episodes = allCoreContent(
-    allPodcastEpisodes
-      .filter((episode) => episode.draft !== true)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    allPodcastEpisodes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   )
 
   return (
@@ -42,11 +40,6 @@ export default function PodcastPage() {
               <h2 className="mt-2 text-2xl font-bold text-brand-navy dark:text-white">
                 <Link href={`/podcast/${episode.slug}`}>{episode.title}</Link>
               </h2>
-              {episode.duration && (
-                <p className="mt-1 text-sm text-brand-slate/70 dark:text-gray-400">
-                  Duration: {episode.duration}
-                </p>
-              )}
               <p className="mt-3 text-brand-slate/80 dark:text-gray-300">{episode.summary}</p>
               <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
                 <Link

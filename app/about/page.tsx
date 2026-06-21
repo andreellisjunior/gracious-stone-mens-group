@@ -1,5 +1,5 @@
 import AuthorLayout from '@/layouts/AuthorLayout'
-import { genPageMetadata } from 'app/seo'
+import { genPageMetadata } from '@/app/seo'
 import { Authors, allAuthors } from 'contentlayer/generated'
 import { MDXLayoutRenderer } from 'pliny/mdx-components.js'
 import { coreContent } from 'pliny/utils/contentlayer.js'
