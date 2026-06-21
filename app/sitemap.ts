@@ -17,12 +17,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  const podcastRoutes = allPodcastEpisodes
-    .filter((episode) => !episode.draft)
-    .map((episode) => ({
-      url: `${siteUrl}/${episode.path}`,
-      lastModified: episode.date,
-    }))
+  const podcastRoutes = allPodcastEpisodes.map((episode) => ({
+    url: `${siteUrl}/${episode.path}`,
+    lastModified: episode.date,
+  }))
 
   const siteRoutes = [
     ...routes,

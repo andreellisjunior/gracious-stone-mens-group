@@ -6,9 +6,7 @@ export default async function Page() {
   const sortedPosts = sortPosts(allBlogs)
   const posts = allCoreContent(sortedPosts)
   const episodes = allCoreContent(
-    allPodcastEpisodes
-      .filter((episode) => episode.draft !== true)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    allPodcastEpisodes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   )
   return <Main posts={posts as Blog[]} episodes={episodes as PodcastEpisode[]} />
 }

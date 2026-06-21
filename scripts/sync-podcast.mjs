@@ -48,30 +48,14 @@ const toSlug = (value) =>
 
 const createFrontmatter = (episode) => {
   const summary = (episode.summary || '').replaceAll('"', '\\"')
-  const guests =
-    episode.guests.length > 0
-      ? `\nguests:\n${episode.guests.map((g) => `  - "${g}"`).join('\n')}`
-      : ''
   return `---
 title: "${episode.title.replaceAll('"', '\\"')}"
 date: ${episode.date}
 summary: "${summary}"
 spotifyUrl: "${episode.spotifyUrl}"
-audioUrl: "${episode.audioUrl}"
-duration: "${episode.duration}"${
-    episode.episodeNumber ? `\nepisodeNumber: ${episode.episodeNumber}` : ''
-  }${episode.season ? `\nseason: ${episode.season}` : ''}${
-    episode.coverImage ? `\ncoverImage: "${episode.coverImage}"` : ''
-  }${guests}
 ---
 `
 }
-
-const createBody = (episode) => `
-${episode.summary}
-
-<SpotifyEmbed url="${episode.spotifyUrl}" title="${episode.title.replaceAll('"', '\\"')}" />
-`
 
 async function syncPodcast() {
   if (!FEED_URL) {
@@ -100,12 +84,6 @@ async function syncPodcast() {
       readTag(item, 'spotify:episodeUri') ||
       readTag(item, 'spotify:showUri')
     const spotifyUrl = spotifyUrlFromUri(spotifyUri) || readTag(item, 'link')
-    const audioUrl = readAttribute(item, 'enclosure', 'url')
-    const duration = readTag(item, 'itunes:duration')
-    const episodeNumber = Number(readTag(item, 'itunes:episode')) || undefined
-    const season = Number(readTag(item, 'itunes:season')) || undefined
-    const coverImage = readAttribute(item, 'itunes:image', 'href')
-    const guests = []
     const parsedDate = date
       ? new Date(date).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0]
@@ -115,12 +93,6 @@ async function syncPodcast() {
       date: parsedDate,
       summary: summary || 'Episode summary will be available soon.',
       spotifyUrl,
-      audioUrl,
-      duration,
-      episodeNumber,
-      season,
-      coverImage,
-      guests,
     }
   })
 
@@ -131,8 +103,7 @@ async function syncPodcast() {
 
   episodes.forEach((episode, index) => {
     const fileName = `${String(index + 1).padStart(2, '0')}-${toSlug(episode.title)}.mdx`
-    const markdown = `${createFrontmatter(episode)}${createBody(episode)}`
-    writeFileSync(path.join(OUTPUT_DIR, fileName), markdown)
+    writeFileSync(path.join(OUTPUT_DIR, fileName), createFrontmatter(episode))
   })
 
   console.log(`Podcast sync generated ${episodes.length} episode files.`)
