@@ -37,36 +37,34 @@ export default function Page() {
   const thursdays = getThursdays(new Date().getFullYear())
 
   return (
-    <>
-      <AuthorLayout content={mainContent}>
-        <h2>About Me:</h2>
-        <MDXLayoutRenderer code={author.body.code} />
-        <h3>Expected Dates (@ 7 P.M.):</h3>
-        <div id="dates" className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
-          {thursdays.map((thursday, i) => {
-            return (
-              <div
-                key={i}
-                className="space-2 flex flex-col items-center justify-center rounded-2xl bg-blue-100 p-4 dark:bg-blue-800"
-              >
-                <div className="mx-3 text-2xl font-bold">
-                  {new Date(2024, thursday.month, 1).toLocaleDateString('en-US', {
-                    month: 'short',
-                  })}
-                </div>
-                <div className="flex gap-2">
-                  <div className="text-lg font-bold">{thursday.day[0]}</div>
-                  {thursday.day[1] && '&'}
-                  <div className="text-lg font-bold">{thursday.day[1]}</div>
-                </div>
+    <AuthorLayout content={mainContent}>
+      <h2>About Me:</h2>
+      <MDXLayoutRenderer code={author.body.code} />
+      <h3>Expected Dates (@ 7 P.M.):</h3>
+      <div id="dates" className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
+        {thursdays.map((thursday, i) => {
+          return (
+            <div
+              key={i}
+              className="space-2 flex flex-col items-center justify-center rounded-2xl bg-blue-100 p-4 dark:bg-blue-800"
+            >
+              <div className="mx-3 text-2xl font-bold">
+                {new Date(2024, thursday.month, 1).toLocaleDateString('en-US', {
+                  month: 'short',
+                })}
               </div>
-            )
-          })}
-        </div>
-        <p>
-          <a href="mailto:hello@aguynamedandre.com">Like to join? Email me!</a>
-        </p>
-      </AuthorLayout>
-    </>
+              <div className="flex gap-2">
+                <div className="text-lg font-bold">{thursday.day[0]}</div>
+                {thursday.day[1] && '&'}
+                <div className="text-lg font-bold">{thursday.day[1]}</div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <p>
+        <a href="mailto:hello@aguynamedandre.com">Like to join? Email me!</a>
+      </p>
+    </AuthorLayout>
   )
 }

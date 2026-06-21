@@ -52,4 +52,9 @@ input:-webkit-autofill:focus {
   .cta-button {
     @apply inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 font-semibold text-white transition hover:bg-primary-700;
   }
+
+  /* kbar command palette — portaled to body, must sit above sticky header (z-30) */
+  div.bg-gray-300\/50.backdrop-blur.backdrop-filter {
+    z-index: 60;
+  }
 }
